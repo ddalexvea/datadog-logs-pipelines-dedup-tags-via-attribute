@@ -125,6 +125,45 @@ kubectl exec $(kubectl get pods -l app=datadog -o jsonpath='{.items[0].metadata.
 | `datadog.site` | `datadoghq.com` | Datadog site (US1) |
 | `datadog.kubelet.tlsVerify` | `false` | Disable TLS verification for kubelet (minikube) |
 
+## Log Pipeline Configuration
+
+To dynamically set the `application_code` tag from the log attribute (instead of static annotation tags), configure a Datadog Log Pipeline:
+
+### Pipeline Setup
+
+1. **Go to**: [Logs > Configuration > Pipelines](https://app.datadoghq.com/logs/pipelines)
+
+2. **Create a new Pipeline**:
+
+   ![Pipeline configuration](pipeline-edit.png)
+
+3. **Add Processor 1 - Remapper** (Remove duplicate tag):
+
+   ![Remapper 1 - Remove first application_code tag](remapper-1-remove-tag.png)
+
+4. **Add Processor 2 - Remapper** (Map attribute to tag):
+
+   ![Remapper 2 - Map attribute to tag](remapper-2-attribute-to-tag.png)
+
+### View Logs in Datadog
+
+Navigate to: https://app.datadoghq.com/logs?query=service%3Alog-generator
+
+Filter by tags:
+- `application_code:toto`
+
+### Result
+
+**Before pipeline:**
+
+![Log before pipeline](log-before.png)
+
+**After pipeline:**
+
+![Log after pipeline](log-after.png)
+
+This allows to deduplicate the tags.
+
 ## Troubleshooting
 
 ### Kubelet TLS Verification Error
@@ -152,45 +191,6 @@ Solution: Add `--set datadog.kubelet.tlsVerify=false` to your Helm install comma
    ```bash
    kubectl get pod log-generator -o jsonpath='{.metadata.annotations}'
    ```
-
-## Log Pipeline Configuration
-
-To dynamically set the `application_code` tag from the log attribute (instead of static annotation tags), configure a Datadog Log Pipeline:
-
-### Pipeline Setup
-
-1. **Go to**: [Logs > Configuration > Pipelines](https://app.datadoghq.com/logs/pipelines)
-
-2. **Create a new Pipeline**:
-
-   ![Pipeline configuration](pipeline-edit.png)
-
-3. **Add Processor 1 - Remapper** (Remove duplicate tag):
-
-   ![Remapper 1 - Remove first application_code tag](remapper-1-remove-tag.png)
-
-4. **Add Processor 2 - Remapper** (Map attribute to tag):
-
-   ![Remapper 2 - Map attribute to tag](remapper-2-attribute-to-tag.png)
-
-### Result
-
-**Before pipeline:**
-
-![Log before pipeline](log-before.png)
-
-**After pipeline:**
-
-![Log after pipeline](log-after.png)
-
-This allows the tag value to be dynamically populated from the log content, making it more flexible for different application codes.
-
-## View Logs in Datadog
-
-Navigate to: https://app.datadoghq.com/logs?query=service%3Alog-generator
-
-Filter by tags:
-- `application_code:toto`
 
 ## Cleanup
 
