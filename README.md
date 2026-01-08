@@ -162,8 +162,8 @@ To dynamically set the `application_code` tag from the log attribute (instead of
 1. **Go to**: [Logs > Configuration > Pipelines](https://app.datadoghq.com/logs/pipelines)
 
 2. **Create a new Pipeline**:
-   - **Filter**: `service:log-generator`
-   - **Name**: `Log Generator Pipeline`
+
+   ![Pipeline configuration](pipeline-edit.png)
 
 3. **Add Processor 1 - Remapper** (Remove duplicate tag):
 
@@ -175,17 +175,13 @@ To dynamically set the `application_code` tag from the log attribute (instead of
 
 ### Result
 
-Before pipeline:
-```
-Tags: application_code:toto, application_code:tata (static from annotations)
-Attribute: application_code: "toto" (from JSON log)
-```
+**Before pipeline:**
 
-After pipeline:
-```
-Tags: application_code:toto (dynamically set from attribute)
-Attribute: application_code: "toto"
-```
+![Log before pipeline](log-before.png)
+
+**After pipeline:**
+
+![Log after pipeline](log-after.png)
 
 This allows the tag value to be dynamically populated from the log content, making it more flexible for different application codes.
 
